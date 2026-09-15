@@ -1,0 +1,5 @@
+export type { XmlElement } from './xml-element'
+export { parseXml, type XmlParseResult, type XmlSyntaxError } from './parse-xml'
+export { buildXml, type BuildXmlOptions } from './build-xml'
+export { decodeXml, type DecodeXmlResult } from './decode-xml'
+export { findInvalidXmlChar, isXmlWhitespace } from './xml-syntax'

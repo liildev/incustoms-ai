@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "singleQuote": true,
+  "ignorePatterns": [
+    "audit/**",
+    "docs/**",
+    ".remember/**",
+    "bun.lock",
+    "src/entities/gtd/config/spec-catalog.json"
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc", "import"],
+  "ignorePatterns": ["audit/**", ".remember/**", "docs/**"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": [
+      "warn",
+      {
+        "allowConstantExport": true
+      }
+    ],
+    "import/no-cycle": "error",
+    "import/no-unassigned-import": [
+      "error",
+      {
+        "allow": ["**/*.css"]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/shared/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^@/(app|pages|widgets|features|entities)(/|$)",
+                "message": "FSD: shared must not import from higher layers."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/entities/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^@/(app|pages|widgets|features)(/|$)",
+                "message": "FSD: entities may import only entities and shared."
+              },
+              {
+                "regex": "^@/entities/[^/]+/?$",
+                "message": "FSD: an entity may import another entity only through its @x API; inside a slice use relative imports."
+              },
+              {
+                "regex": "^@/entities/[^/]+/[^@]",
+                "message": "FSD: an entity may import another entity only through its @x API; inside a slice use relative imports."
+              },
+              {
+                "regex": "^(\\.\\./){2}",
+                "message": "FSD: a relative import must not leave its slice."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/features/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^@/(app|pages|widgets|features)(/|$)",
+                "message": "FSD: features may import only entities and shared (no cross-feature imports)."
+              },
+              {
+                "regex": "^@/entities/[^/]+/",
+                "message": "FSD: import slices through their public API (index.ts)."
+              },
+              {
+                "regex": "^(\\.\\./){2}",
+                "message": "FSD: a relative import must not leave its slice."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/widgets/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^@/(app|pages|widgets)(/|$)",
+                "message": "FSD: widgets may import only features, entities and shared."
+              },
+              {
+                "regex": "^@/(features|entities)/[^/]+/",
+                "message": "FSD: import slices through their public API (index.ts)."
+              },
+              {
+                "regex": "^(\\.\\./){2}",
+                "message": "FSD: a relative import must not leave its slice."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/pages/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^@/(app|pages)(/|$)",
+                "message": "FSD: pages may import only widgets, features, entities and shared."
+              },
+              {
+                "regex": "^@/(widgets|features|entities)/[^/]+/",
+                "message": "FSD: import slices through their public API (index.ts)."
+              },
+              {
+                "regex": "^(\\.\\./){2}",
+                "message": "FSD: a relative import must not leave its slice."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/app/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^@/(pages|widgets|features|entities)/[^/]+/",
+                "message": "FSD: import slices through their public API (index.ts)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "src/pages/*/index.ts",
+        "src/widgets/*/index.ts",
+        "src/features/*/index.ts",
+        "src/entities/*/index.ts"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^\\.\\./",
+                "message": "FSD: a public API re-exports its own slice only."
+              },
+              {
+                "regex": "^@/",
+                "message": "FSD: a public API re-exports its own slice only."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

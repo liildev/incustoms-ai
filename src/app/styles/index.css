@@ -1,0 +1,125 @@
+@import 'tailwindcss';
+
+/*
+ * `stage:` — the scaled 1920×1080 canvas of /presentation. It needs height as well as width: on a
+ * landscape phone the canvas would scale text below legibility, so slides reflow there instead.
+ * Keep in sync with STAGE_QUERY in pages/presentation/config/stage.ts.
+ */
+@custom-variant stage (@media (width >= 48rem) and (height >= 30rem));
+
+/*
+ * Design tokens. The only place colors, radii and shadows are defined; components use the
+ * semantic utilities (bg-surface, text-muted-foreground, rounded-md, shadow-popover, …).
+ * BeUI Motion components are adapted to these names instead of their own defaults.
+ *
+ * Colors are OKLCH. Neutrals share one cool hue with a trace of chroma so grays read clean,
+ * not muddy; status hues keep enough lightness headroom for text on their own 10% tints.
+ * Minimum contrast of text, status, input-edge and focus pairs is enforced by tokens.test.ts.
+ */
+@theme {
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-dense: 0.8125rem;
+  --text-dense--line-height: 1.25rem;
+
+  /* Neutrals */
+  --color-background: oklch(0.974 0.004 250);
+  --color-foreground: oklch(0.31 0.018 255);
+  --color-surface: oklch(1 0 0);
+  /* Inset areas inside a surface: table headers, read-only fields, empty states */
+  --color-surface-muted: oklch(0.968 0.005 250);
+  --color-border: oklch(0.925 0.006 250);
+  --color-input: oklch(0.81 0.01 250);
+  /* Bottom edge of text fields: 3:1 against surface and surface-muted (WCAG 1.4.11), so a field
+     stays identifiable while its other edges keep the light input border */
+  --color-input-strong: oklch(0.64 0.012 250);
+
+  /* Interactive fills */
+  --color-muted: oklch(0.955 0.005 250);
+  --color-muted-foreground: oklch(0.47 0.017 255);
+  /* Project extension: tertiary text such as XML tags and secondary metadata */
+  --color-subtle-foreground: oklch(0.52 0.015 255);
+  --color-secondary: oklch(0.965 0.005 250);
+  --color-secondary-foreground: oklch(0.31 0.018 255);
+
+  /* Muted steel blue: primary actions, selection, focus */
+  --color-primary: oklch(0.5 0.095 252);
+  --color-primary-foreground: oklch(0.99 0.004 250);
+  --color-accent: oklch(0.942 0.026 250);
+  --color-accent-foreground: oklch(0.45 0.09 252);
+  --color-focus-ring: oklch(0.6 0.1 252);
+
+  /* Status */
+  --color-destructive: oklch(0.53 0.15 27);
+  --color-destructive-foreground: oklch(0.99 0.004 250);
+  --color-warning: oklch(0.52 0.1 65);
+  --color-success: oklch(0.52 0.085 158);
+
+  /* Radius scale: sm inner items and badges, md controls, lg panels and tables, xl dialogs */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Elevation, tinted with the foreground hue instead of black */
+  --shadow-sm: 0 1px 2px 0 oklch(0.31 0.018 255 / 0.06);
+  --shadow-popover: 0 6px 16px -6px oklch(0.31 0.018 255 / 0.16);
+  /* drop-shadow, not box-shadow: it follows the dialog's animated clip-path instead of being clipped by it */
+  --drop-shadow-dialog: 0 12px 20px oklch(0.31 0.018 255 / 0.14);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-focus-ring/50;
+  }
+
+  html {
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background font-sans text-dense text-foreground;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
+}
+
+@keyframes page-loader-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Printing. The GTD printable form (features/print-gtd) is an A4 portrait document, like Приложения № 1 и 2
+ * к Инструкции № 2773. While its surface is open, only that surface is printed.
+ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+
+  html,
+  body {
+    background: var(--color-surface) !important;
+    overflow: visible !important;
+  }
+
+  body:has(> [data-print-surface]) > :not([data-print-surface]) {
+    display: none !important;
+  }
+}
